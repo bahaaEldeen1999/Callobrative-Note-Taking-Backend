@@ -10,7 +10,7 @@ function checkAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, secretKey);
-    req.userId = decoded;
+    req.user = decoded;
     next();
   } catch (ex) {
     return res.status(400).send("Invalid Token");
@@ -21,3 +21,8 @@ function createToken(userId) {
   const token = jwt.sign({ _id: userId }, secretKey, { expiresIn: "288884h" });
   return token;
 }
+
+module.exports = {
+  checkAuth,
+  createToken,
+};
