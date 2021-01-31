@@ -4,6 +4,7 @@ const { userModel } = require("../models/user");
 async function login(req, res) {
   try {
     const { username, password } = req.body;
+    //console.log(req.body);
     const user = await userModel.findOne({
       username: username,
       password: password,
@@ -13,6 +14,7 @@ async function login(req, res) {
     const token = authentication.createToken(user._id);
     res.status(200).send(token).end();
   } catch (ex) {
+    //console.log(ex);
     res.status(400).send("error in login");
   }
 }
@@ -31,7 +33,7 @@ async function signup(req, res) {
     const token = authentication.createToken(user._id);
     res.status(200).send(token).end();
   } catch (ex) {
-    console.log(ex);
+    //console.log(ex);
     res.status(400).send("error in signup");
   }
 }

@@ -7,15 +7,22 @@ async function createNote(req, res) {
   try {
     const userId = req.user._id;
     const user = await userModel.findOne({ _id: userId });
-    const noteId = uuid.v1();
-    let doc = shareDBConnection.get("notes", noteId);
-    await createShareDBDoc(doc);
+    const noteIdBody = uuid.v1();
+    const noteIdTitle = uuid.v1();
+    let docBody = shareDBConnection.get("notes", noteIdBody);
+    let docTitle = shareDBConnection.get("notes", noteIdTitle);
+    await createShareDBDoc(docBody);
+    await createShareDBDoc(docTitle);
     user.notes.push({
-      id: noteId,
+      bodyId: noteIdBody,
+      titleId: noteIdTitle,
     });
     user.markModified("notes");
     await user.save();
-    res.status(201).send(noteId);
+    res.status(201).json({
+      bodyId: noteIdBody,
+      titleId: noteIdTitle,
+    });
   } catch (ex) {
     res.status(400).send("error").end();
   }
@@ -60,10 +67,19 @@ async function getNoteCallob(req, res) {
     const noteIndx = req.query.linkid;
     const userId = req.query.uid;
     const user = await userModel.findOne({ _id: userId });
-    if (user.notes[noteIndx].isCallob)
-      res.status(200).send(user.notes[noteIndx].id).end();
-    else throw new Error("error");
+    if (user.notes[noteIndx].isCallob) {
+      const bodyId = user.notes[noteIndx].bodyId;
+      const titleId = user.notes[noteIndx].titleId;
+      res.redirect(
+        process.env.FRONT_END +
+          "note.html?bodyId=" +
+          bodyId +
+          "&titleId=" +
+          titleId
+      );
+    } else throw new Error("error");
   } catch (ex) {
+    console.log(ex);
     res.status(400).send("error").end();
   }
 }

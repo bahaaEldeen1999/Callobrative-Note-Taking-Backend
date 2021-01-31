@@ -8,10 +8,6 @@ router.post(
   authentication.checkAuth,
   noteController.getCallbobrationLink
 );
-router.get(
-  "/note/callobration/req",
-  authentication.checkAuth,
-  noteController.getNoteCallob
-);
+router.get("/note/callobration/req", noteController.getNoteCallob);
 
 module.exports = router;
