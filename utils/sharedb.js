@@ -16,3 +16,11 @@ module.exports.init = function (server) {
     backend.listen(stream);
   });
 };
+
+module.exports.createDoc = function (doc) {
+  return new Promise(function (resolve) {
+    doc.create({ content: "" }, function () {
+      resolve();
+    });
+  });
+};

@@ -1,6 +1,9 @@
 require("dotenv").config();
 const app = require("express")();
+const http = require("http");
+const server = http.createServer(app);
 require("./database/connection")();
+require("./utils/sharedb").init(server);
 const bodyParser = require("body-parser");
 const userRouter = require("./routes/user-routes");
 const noteRoutes = require("./routes/note-route");

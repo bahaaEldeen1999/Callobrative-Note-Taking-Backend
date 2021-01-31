@@ -21,6 +21,7 @@
     "sharedb-mongo": "^1.0.0-beta.15",
     "sharedb-string-binding": "^1.0.0",
     "socket.io": "^3.1.0",
+    "uuid": "^8.3.2",
     "ws": "^7.4.2"
   }
 }

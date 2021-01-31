@@ -1,37 +1,21 @@
 const authentication = require("../utils/authentication");
 const { userModel } = require("../models/user");
 const shareDBConnection = require("../utils/sharedb").connection;
-
-async function addNote(req, res) {
+const createShareDBDoc = require("../utils/sharedb").createDoc;
+const uuid = require("uuid");
+async function createNote(req, res) {
   try {
     const userId = req.user._id;
-    const { title, body, Id } = req.body;
-    if (!title || !body || !Id) throw new Error("error");
     const user = await userModel.findOne({ _id: userId });
+    const noteId = uuid.v1();
+    let doc = shareDBConnection.get("notes", noteId);
+    await createShareDBDoc(doc);
     user.notes.push({
-      id: Id,
+      id: noteId,
     });
     user.markModified("notes");
     await user.save();
-    res.status(201).send("created");
-  } catch (ex) {
-    res.status(400).send("error").end();
-  }
-}
-
-async function editNote(req, res) {
-  try {
-    const userId = req.user._id;
-    const { noteIndx, title, body } = req.body;
-    if (!title || !body) throw new Error("error");
-    const user = await userModel.findOne({ _id: userId });
-    user.notes[noteIndx] = {
-      title: title,
-      body: body,
-    };
-    user.markModified("notes");
-    await user.save();
-    res.status(200).send("edited");
+    res.status(201).send(noteId);
   } catch (ex) {
     res.status(400).send("error").end();
   }
@@ -52,28 +36,40 @@ async function getNotes(req, res) {
 async function getCallbobrationLink(req, res) {
   try {
     const userId = req.user._id;
-    const { noteIndx, socketId } = req.body;
+    const { noteIndx } = req.body;
     const user = await userModel.findOne({ _id: userId });
     user.notes[noteIndx].isCallob = true;
-    user.notes[noteIndx].socketId = socketId;
+    user.markModified("notes");
+    await user.save();
     const url =
       req.protocol +
       "://" +
       req.get("host") +
       req.originalUrl +
-      "?userid=" +
-      String(userId) +
-      "&noteid=" +
-      String(noteIndx);
+      "/req?linkid=" +
+      String(noteIndx) +
+      "&uid=" +
+      userId;
     res.status(200).send(url).end();
   } catch (ex) {
     res.status(400).send("error").end();
   }
 }
-
+async function getNoteCallob(req, res) {
+  try {
+    const noteIndx = req.query.linkid;
+    const userId = req.query.uid;
+    const user = await userModel.findOne({ _id: userId });
+    if (user.notes[noteIndx].isCallob)
+      res.status(200).send(user.notes[noteIndx].id).end();
+    else throw new Error("error");
+  } catch (ex) {
+    res.status(400).send("error").end();
+  }
+}
 module.exports = {
+  createNote,
   getNotes,
-  addNote,
-  editNote,
   getCallbobrationLink,
+  getNoteCallob,
 };
