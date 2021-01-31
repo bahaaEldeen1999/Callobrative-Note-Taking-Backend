@@ -31,6 +31,7 @@ async function signup(req, res) {
     const token = authentication.createToken(user._id);
     res.status(200).send(token).end();
   } catch (ex) {
+    console.log(ex);
     res.status(400).send("error in signup");
   }
 }
