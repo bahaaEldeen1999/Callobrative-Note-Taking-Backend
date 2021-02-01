@@ -27,7 +27,7 @@
 
 ## project setup
 
-> git clone https://github.com/bahaaEldeen1999/Callobrative-Note-Taking-Backend<br>
+> git clone https://github.com/bahaaEldeen1999/Callobrative-Note-Taking-Backend.git<br>
 > cd Callobrative-Note-Taking-Backend<br>
 > npm intall <br>
 > node server.js <br>
